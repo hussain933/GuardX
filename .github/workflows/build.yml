@@ -17,24 +17,25 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
+      - name: Install Android SDK
         run: |
-          sudo apt-get install -y wget unzip
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          mkdir -p $HOME/android/cmdline-tools
-          unzip -q commandlinetools-linux-9477386_latest.zip -d $HOME/android/cmdline-tools
-          mv $HOME/android/cmdline-tools/cmdline-tools $HOME/android/cmdline-tools/latest
-          echo "ANDROID_HOME=$HOME/android" >> $GITHUB_ENV
-          echo "$HOME/android/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          yes | sdkmanager --sdk_root=$HOME/android "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+          sudo apt-get update -q
+          sudo apt-get install -y wget unzip android-sdk
+          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
+          echo "PATH=/usr/lib/android-sdk/platform-tools:$PATH" >> $GITHUB_PATH
 
-      - name: Make Gradle Executable
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
         run: chmod +x gradlew
 
-      - name: Build APK
-        run: ./gradlew assembleDebug
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon
+        env:
+          ANDROID_HOME: /usr/lib/android-sdk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GuardX-V2.5.0
+          name: GuardX-V2.5.0-Debug
           path: app/build/outputs/apk/debug/*.apk
