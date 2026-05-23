@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#0A0A0A"
+    android:padding="32dp">
+
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_shield"
+        android:layout_marginBottom="24dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🛡️ GuardX"
+        android:textColor="#FF3333"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version 2.5.0 ⚡"
+        android:textColor="#888888"
+        android:textSize="14sp"
+        android:layout_marginBottom="48dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="8dp"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="#FF3333"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Initializing GuardX V2.5.0..."
+        android:textColor="#AAAAAA"
+        android:textSize="13sp"/>
+
+</LinearLayout>

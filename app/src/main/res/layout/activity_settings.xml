@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0A0A0A">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚙️ Settings"
+            android:textColor="#FF3333"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Game Protection -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🎮 Game Protection"
+            android:textColor="#FF3333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#1A1A1A"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Start on Boot"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"/>
+
+            <Switch
+                android:id="@+id/bootSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumbTint="#FF3333"/>
+
+        </LinearLayout>
+
+        <!-- Scan Settings -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔍 Scan"
+            android:textColor="#FF3333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="#1A1A1A"
+            android:padding="12dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Auto-fix Threats"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"/>
+
+            <Switch
+                android:id="@+id/autoFixSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:thumbTint="#FF3333"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan Sensitivity:"
+            android:textColor="#AAAAAA"
+            android:textSize="13sp"
+            android:layout_marginBottom="4dp"/>
+
+        <RadioGroup
+            android:id="@+id/sensitivityGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <RadioButton
+                android:id="@+id/sensitivityLow"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Low"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:id="@+id/sensitivityMed"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Medium"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:id="@+id/sensitivityHigh"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="High"
+                android:textColor="#FFFFFF"/>
+
+        </RadioGroup>
+
+        <!-- Notifications -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🔔 Notifications"
+            android:textColor="#FF3333"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Notification Style:"
+            android:textColor="#AAAAAA"
+            android:textSize="13sp"
+            android:layout_marginBottom="4dp"/>
+
+        <RadioGroup
+            android:id="@+id/notifGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/notifSilent"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Silent"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:id="@+id/notifNormal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Normal"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:id="@+id/notifLoud"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Loud"
+                android:textColor="#FFFFFF"/>
+
+        </RadioGroup>
+
+    </LinearLayout>
+</ScrollView>

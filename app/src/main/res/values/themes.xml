@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.GuardX" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/red</item>
+        <item name="colorPrimaryVariant">@color/dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/red</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:colorBackground">@color/black</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+    </style>
+
+    <style name="Theme.GuardX.Popup" parent="Theme.GuardX">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+</resources>

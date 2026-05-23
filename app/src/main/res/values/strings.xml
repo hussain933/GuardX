@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GuardX</string>
+    <string name="version">2.5.0</string>
+    <string name="protection_on">Protection: ON ⚡</string>
+    <string name="protection_off">Protection: OFF</string>
+    <string name="scan_now">🔍 SCAN NOW</string>
+    <string name="scanning">Scanning...</string>
+    <string name="all_clear">✅ All Clear! Safe to Play!</string>
+    <string name="threat_found">🚨 Threats Detected!</string>
+    <string name="game_frozen">🎮 Game Status: FROZEN ⚡</string>
+    <string name="fix_all">🔧 FIX ALL</string>
+    <string name="cancel">❌ CANCEL</string>
+    <string name="no_history">No scan history yet</string>
+    <string name="export_pdf">📄 Export PDF</string>
+    <string name="clear_history">🗑️ Clear</string>
+    <string name="settings">⚙️ Settings</string>
+    <string name="blacklist">📋 Blacklist</string>
+    <string name="history">📊 History</string>
+    <string name="boot_start">Start on Boot</string>
+    <string name="auto_fix">Auto-fix Threats</string>
+    <string name="sensitivity">Scan Sensitivity</string>
+    <string name="notif_style">Notification Style</string>
+    <string name="permission_ultra">Permission: ⚡ ULTRA</string>
+    <string name="permission_admin">Permission: 🔴 ADMIN</string>
+    <string name="permission_basic">Permission: ⚪ BASIC</string>
+</resources>
