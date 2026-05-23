@@ -3,7 +3,6 @@ package com.guardx.app.service;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
@@ -36,13 +35,16 @@ public class GuardXService extends Service {
     private HistoryDAO historyDAO;
     private PrefsManager prefs;
     private boolean isScanning = false;
+    private List<String> lastThreats = new ArrayList<>();
+    private boolean warningShown = false;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initComponents();
         createNotificationChannel();
-        startForeground(Constants.NOTIF_ID_MAIN, buildNotification("Protection Active", "GuardX is protecting your games"));
+        // Sirf ek sticky notification — update nahi hogi bar bar
+        startForeground(Constants.NOTIF_ID_MAIN, buildMainNotif());
     }
 
     private void initComponents() {
@@ -59,20 +61,23 @@ public class GuardXService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && Constants.ACTION_FIX_ALL.equals(intent.getAction())) {
-            resumeGame();
+            warningShown = false;
+            lastThreats.clear();
         }
         startScanning();
         return START_STICKY;
     }
 
     private void startScanning() {
+        if (scanRunnable != null) return;
         scanRunnable = new Runnable() {
             @Override
             public void run() {
                 if (prefs.isProtectionOn()) {
                     performScan();
                 }
-                handler.postDelayed(this, Constants.SCAN_GAME_ACTIVE);
+                // Scan har 10 second me — notification nahi aayegi bar bar
+                handler.postDelayed(this, 10000);
             }
         };
         handler.post(scanRunnable);
@@ -85,37 +90,38 @@ public class GuardXService extends Service {
         new Thread(() -> {
             List<String> allThreats = new ArrayList<>();
 
-            // Layer 1: App Scan
+            // 5 Layer Scan — silently
             allThreats.addAll(appScanner.scan());
-
-            // Layer 2: File Scan
             allThreats.addAll(fileScanner.scan());
-
-            // Layer 3: Environment Scan
             allThreats.addAll(envScanner.scan());
-
-            // Layer 4: Process Scan
             allThreats.addAll(processScanner.scan());
-
-            // Layer 5: AI Filter
             allThreats.addAll(aiFilter.scan());
 
-            // Check if game running
             boolean gameRunning = appScanner.isGameRunning(Constants.GAMES);
 
             if (!allThreats.isEmpty() && gameRunning) {
-                // Save to history
-                String threats = String.join(", ", allThreats);
-                historyDAO.addHistory(threats, "BLOCKED", getRiskLevel(allThreats));
+                // Sirf tab notification aaye jab NEW threat mile
+                boolean newThreat = !allThreats.equals(lastThreats);
 
-                // Update notification
-                updateNotification("⚠️ " + allThreats.size() + " Threats Detected!", true);
+                if (newThreat && !warningShown) {
+                    lastThreats = new ArrayList<>(allThreats);
+                    warningShown = true;
 
-                // Show warning popup
-                showWarningPopup(allThreats);
+                    // History save karo
+                    String threats = String.join(", ", allThreats);
+                    historyDAO.addHistory(threats, "BLOCKED", getRiskLevel(allThreats));
 
+                    // Sirf ek baar warning dikhao
+                    showWarningPopup(allThreats);
+                    showWarningNotif(allThreats.size());
+                }
             } else {
-                updateNotification("✅ All Clear — Safe to Play!", false);
+                // Threats clear ho gayi — reset karo
+                if (warningShown) {
+                    warningShown = false;
+                    lastThreats.clear();
+                    cancelWarningNotif();
+                }
                 prefs.setLastScan(System.currentTimeMillis());
             }
 
@@ -130,8 +136,39 @@ public class GuardXService extends Service {
         startActivity(intent);
     }
 
-    private void resumeGame() {
-        updateNotification("✅ Fixed! Game Resuming...", false);
+    private void showWarningNotif(int count) {
+        NotificationManager manager = (NotificationManager)
+            getSystemService(NOTIFICATION_SERVICE);
+        if (manager == null) return;
+
+        Notification notif = new NotificationCompat.Builder(this, Constants.NOTIF_CHANNEL_ID)
+            .setContentTitle("🚨 GuardX — " + count + " Threats!")
+            .setContentText("Tap to fix before getting banned")
+            .setSmallIcon(R.drawable.ic_shield)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true) // Sirf ek baar dikhega
+            .build();
+
+        manager.notify(Constants.NOTIF_ID_WARNING, notif);
+    }
+
+    private void cancelWarningNotif() {
+        NotificationManager manager = (NotificationManager)
+            getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.cancel(Constants.NOTIF_ID_WARNING);
+        }
+    }
+
+    private Notification buildMainNotif() {
+        return new NotificationCompat.Builder(this, Constants.NOTIF_CHANNEL_ID)
+            .setContentTitle("🛡️ GuardX Active")
+            .setContentText("Protecting your games silently")
+            .setSmallIcon(R.drawable.ic_shield)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .setSilent(true) // Koi sound nahi!
+            .build();
     }
 
     private String getRiskLevel(List<String> threats) {
@@ -145,37 +182,18 @@ public class GuardXService extends Service {
             NotificationChannel channel = new NotificationChannel(
                 Constants.NOTIF_CHANNEL_ID,
                 Constants.NOTIF_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
+                NotificationManager.IMPORTANCE_LOW // LOW — koi sound nahi
             );
-            channel.setDescription("GuardX Protection Service");
+            channel.setDescription("GuardX Silent Protection");
+            channel.setSound(null, null); // Sound band
+            channel.enableVibration(false); // Vibration band
             NotificationManager manager = getSystemService(NotificationManager.class);
             if (manager != null) manager.createNotificationChannel(channel);
         }
     }
 
-    private Notification buildNotification(String title, String content) {
-        return new NotificationCompat.Builder(this, Constants.NOTIF_CHANNEL_ID)
-            .setContentTitle(title)
-            .setContentText(content)
-            .setSmallIcon(R.drawable.ic_shield)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setOngoing(true)
-            .build();
-    }
-
-    private void updateNotification(String content, boolean warning) {
-        NotificationManager manager = (NotificationManager)
-            getSystemService(NOTIFICATION_SERVICE);
-        if (manager != null) {
-            manager.notify(Constants.NOTIF_ID_MAIN,
-                buildNotification("🛡️ GuardX V2.5", content));
-        }
-    }
-
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
+    public IBinder onBind(Intent intent) { return null; }
 
     @Override
     public void onDestroy() {
@@ -183,8 +201,5 @@ public class GuardXService extends Service {
         if (handler != null && scanRunnable != null) {
             handler.removeCallbacks(scanRunnable);
         }
-        // Restart service if killed
-        Intent restartIntent = new Intent(this, GuardXBootReceiver.class);
-        sendBroadcast(restartIntent);
     }
 }
