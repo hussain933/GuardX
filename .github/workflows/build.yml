@@ -1,14 +1,11 @@
 name: GuardX APK Build
-
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -17,25 +14,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install SDK
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0"
+
+      - name: Build APK
         run: |
-          sudo apt-get update -q
-          sudo apt-get install -y wget unzip android-sdk
-          echo "ANDROID_HOME=/usr/lib/android-sdk" >> $GITHUB_ENV
-          echo "PATH=/usr/lib/android-sdk/platform-tools:$PATH" >> $GITHUB_PATH
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon
-        env:
-          ANDROID_HOME: /usr/lib/android-sdk
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GuardX-V2.5.0-Debug
+          name: GuardX-APK
           path: app/build/outputs/apk/debug/*.apk
