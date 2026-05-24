@@ -8,7 +8,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.guardx.app.R;
-import com.guardx.app.database.BlacklistDAO;
 import com.guardx.app.database.HistoryDAO;
 import com.guardx.app.permission.PermissionChecker;
 import com.guardx.app.service.GuardXService;
@@ -35,13 +34,9 @@ public class DashboardActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-
         prefs = new PrefsManager(this);
         initViews();
         updateUI();
-        checkPermissions();
-
-        // Start service
         startGuardXService();
     }
 
@@ -57,7 +52,6 @@ public class DashboardActivity extends AppCompatActivity {
         settingsBtn = findViewById(R.id.settingsBtn);
         blacklistBtn = findViewById(R.id.blacklistBtn);
 
-        // Switch listener
         protectionSwitch.setChecked(prefs.isProtectionOn());
         protectionSwitch.setOnCheckedChangeListener((btn, isChecked) -> {
             prefs.setProtectionOn(isChecked);
@@ -65,18 +59,21 @@ public class DashboardActivity extends AppCompatActivity {
                 "Protection: ON ⚡" : "Protection: OFF");
         });
 
-        // Buttons
-        scanBtn.setOnClickListener(v -> startScan());
+        // Scan button → ScanHomeActivity
+        scanBtn.setOnClickListener(v ->
+            startActivity(new Intent(this, ScanHomeActivity.class)));
+
         historyBtn.setOnClickListener(v ->
             startActivity(new Intent(this, HistoryActivity.class)));
+
         settingsBtn.setOnClickListener(v ->
             startActivity(new Intent(this, SettingsActivity.class)));
+
         blacklistBtn.setOnClickListener(v ->
             startActivity(new Intent(this, BlacklistActivity.class)));
     }
 
     private void updateUI() {
-        // Permission level
         if (PermissionChecker.hasDeviceOwner(this)) {
             permissionLevel.setText("Permission: ⚡ ULTRA");
         } else if (PermissionChecker.hasDeviceAdmin(this)) {
@@ -85,7 +82,6 @@ public class DashboardActivity extends AppCompatActivity {
             permissionLevel.setText("Permission: ⚪ BASIC");
         }
 
-        // Last scan
         long lastScan = prefs.getLastScan();
         if (lastScan == 0) {
             lastScanText.setText("Last Scan: Never");
@@ -95,38 +91,10 @@ public class DashboardActivity extends AppCompatActivity {
             lastScanText.setText("Last Scan: " + time);
         }
 
-        // Threats today
         HistoryDAO dao = new HistoryDAO(this);
         int threats = dao.getAllHistory().size();
         threatsTodayText.setText("Threats Today: " + threats);
-
-        // Active game
         activeGameText.setText("Active Game: Watching...");
-    }
-
-    private void checkPermissions() {
-        if (!PermissionChecker.hasUsageStats(this)) {
-            PermissionChecker.openUsageStats(this);
-        } else if (!PermissionChecker.hasOverlayPermission(this)) {
-            PermissionChecker.openOverlaySettings(this);
-        } else if (!PermissionChecker.hasAccessibility(this)) {
-            com.guardx.app.permission.AccessibilityManager
-                .openAccessibilitySettings(this);
-        }
-    }
-
-    private void startScan() {
-        scanBtn.setText("Scanning...");
-        scanBtn.setEnabled(false);
-
-        new Thread(() -> {
-            try { Thread.sleep(2000); } catch (Exception e) {}
-            runOnUiThread(() -> {
-                scanBtn.setText("SCAN NOW");
-                scanBtn.setEnabled(true);
-                updateUI();
-            });
-        }).start();
     }
 
     private void startGuardXService() {
